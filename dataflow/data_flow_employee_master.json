@@ -1,0 +1,64 @@
+{
+	"name": "data_flow_employee_master",
+	"properties": {
+		"description": "To load Employee Master data to SQL dedicated pool table: NYC_Payroll_EMP_MD",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmpMaster",
+						"type": "DatasetReference"
+					},
+					"name": "FromEmpMasterFileToSQLDedicatedPool"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable_NYC_Payroll_EMP_MD",
+						"type": "DatasetReference"
+					},
+					"name": "ToSQLDedicatedPoolNYCPayrollEMPMD",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorageLinkService",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false) ~> FromEmpMasterFileToSQLDedicatedPool",
+				"FromEmpMasterFileToSQLDedicatedPool sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     input(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          EmployeeID,",
+				"          LastName,",
+				"          FirstName",
+				"     )) ~> ToSQLDedicatedPoolNYCPayrollEMPMD"
+			]
+		}
+	}
+}

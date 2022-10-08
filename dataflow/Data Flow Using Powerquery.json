@@ -1,0 +1,28 @@
+{
+	"name": "Data Flow Using Powerquery",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "nycpayroll_2020",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> nycpayroll_2020",
+					"dataset": {
+						"referenceName": "nycpayroll_2020",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "table_sqldb_nyc_payroll_data",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> table_sqldb_nyc_payroll_data",
+					"dataset": {
+						"referenceName": "table_sqldb_nyc_payroll_data",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared nycpayroll_2020 = let AdfDoc = AzureStorage.DataLakeContents(\"https://storage000adls.dfs.core.windows.net/adlsnycpayrol-rajesh-c/dirhistoryfiles/nycpayroll_2020.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared table_sqldb_nyc_payroll_data = let AdfDoc = Sql.Database(\"sqldb00.database.windows.net\", \"db_nycpayroll\", [CreateNavigationProperties = false]), InputTable = AdfDoc{[Schema=\"dbo\",Item=\"NYC_Payroll_Data\"]}[Data] in InputTable;\r\nshared UserQuery = let Source = #\"nycpayroll_2020\" in Source;\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

@@ -1,0 +1,42 @@
+{
+	"name": "Pipeline Load Title Master To Synapse",
+	"properties": {
+		"description": "To load Title master data to staging",
+		"activities": [
+			{
+				"name": "Data Flow Load Title MD",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "data_flow_title_master",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorageLinkService",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "adlsnycpayrol-rajesh-c/dirstaging"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-10-07T22:25:02Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
